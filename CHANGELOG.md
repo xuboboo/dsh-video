@@ -3,6 +3,19 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.0.0] - 2026-11-08
+
+### Added (SaaS edition)
+
+- Optional cloud sync with any endpoint implementing the dsh-video sync protocol (GET/PUT /projects, Bearer auth) — documented in docs/SYNC.md with a zero-dependency self-hosted reference server in server/ (SYNC_TOKEN auth, JSON file storage, CORS for direct browser use).
+- Cloud sync card: endpoint, token, push, pull-and-merge; last-write-wins by project id + updatedAt, with losing copies preserved as conflict snapshots (never deleted).
+- Token is memory-only by default; the opt-in device remember is an explicit trade-off. ARK_API_KEY never enters the browser.
+- Every local save stamps updatedAt; exports include the conflict ledger.
+
+### Fixed (audit)
+
+- Simpler, correct per-project save stamping; cost-summary export line simplified; seven-section builder dead branch removed; sync strings moved into the i18n dictionaries.
+
 ## [2.0.1] - 2026-11-08
 
 ### Fixed

@@ -47,13 +47,22 @@ AI 视频很贵：重生成一个镜头按秒计费，而改一句提示词是�
 - **易错对照** —— 原文 20 行「模型容易犯的错 / 应该怎么写」对照表，写提示词时对着查。
 - **中英双语** —— 完整中英文界面，一键切换，默认跟随浏览器语言。
 - **本地优先** —— 所有数据保存在浏览器本地（`localStorage`），无账号、无服务端、无遥测；v1 项目自动迁移。
+- **云同步（可选，SaaS 版）** —— 把插件指向任何实现 [dsh-video 同步协议](docs/SYNC.md)的端点即可获得多端同步：**推送**全量上传，**拉取并合并**按项目 id + `updatedAt` 合并（最后写入获胜，被覆盖方自动保留为冲突快照）。[`server/`](server/README.md) 自带零依赖参考服务。令牌默认只在内存里；`ARK_API_KEY` 永不进入浏览器。
 - **主题自适应** —— 仅使用 Harness 主题令牌（`--dsw-alias-*`）着色，自动适配明暗主题。
 
 ## 截图
 
-| 易错对照（中文） | 分镜流水线（中文） | 提示词库（中文） |
+| 易错对照（中文） | 云同步（中文） | 分镜流水线（中文） |
 | --- | --- | --- |
-| ![易错对照](screenshots/failure-modes-zh.png) | ![分镜](screenshots/shots-zh.png) | ![提示词库](screenshots/prompt-library-zh.png) |
+| ![易错对照](screenshots/failure-modes-zh.png) | ![云同步](screenshots/cloud-sync-zh.png) | ![分镜](screenshots/shots-zh.png) |
+
+## 三条命令自建同步服务
+
+```sh
+SYNC_TOKEN=我的令牌 node server/server.mjs   # 监听 127.0.0.1:8787
+# 插件里：云同步 → 端点 http://127.0.0.1:8787，填令牌，点推送
+# 另一台设备：同端点 + 拉取并合并
+```
 
 ## 环境要求
 

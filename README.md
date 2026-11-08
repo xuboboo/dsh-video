@@ -49,13 +49,22 @@ AI video is expensive: regenerating a shot costs money by the second, while rewr
 - **Failure modes tab** — the article's 20-row table of typical video-model failures and the phrasing that fixes them, for checking prompts against.
 - **Bilingual** — full Chinese and English UI with a one-click toggle; the default follows your browser language.
 - **Local-first** — everything is stored in your browser (`localStorage`); no accounts, no server, no telemetry. v1 projects migrate automatically.
+- **Cloud sync (optional, SaaS)** — point the plugin at any endpoint implementing the [dsh-video sync protocol](docs/SYNC.md) and get multi-device sync: **Push** uploads, **Pull & merge** reconciles by project id + `updatedAt` (last write wins, losing copies preserved as conflict snapshots). A zero-dependency self-hosted reference server ships in [`server/`](server/README.md). The token is memory-only by default; `ARK_API_KEY` never enters the browser.
 - **Theme-aware** — styled exclusively with Harness theme tokens, so it matches light and dark mode automatically.
 
 ## Screenshots
 
-| Failure modes (中文) | Shot pipeline (中文) | English UI |
+| Failure modes (中文) | Shot pipeline (中文) | Cloud sync (中文) |
 | --- | --- | --- |
-| ![failure modes](screenshots/failure-modes-zh.png) | ![shots](screenshots/shots-zh.png) | ![en](screenshots/studio-en.png) |
+| ![failure modes](screenshots/failure-modes-zh.png) | ![shots](screenshots/shots-zh.png) | ![cloud sync](screenshots/cloud-sync-zh.png) |
+
+## Self-hosted sync in 3 commands
+
+```sh
+SYNC_TOKEN=my-secret node server/server.mjs   # starts on 127.0.0.1:8787
+# in the plugin: Cloud sync → endpoint http://127.0.0.1:8787, token, Push
+# on another device: same endpoint + Pull & merge
+```
 
 ## Requirements
 

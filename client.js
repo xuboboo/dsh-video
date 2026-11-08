@@ -119,6 +119,21 @@ window.__ModuleLoader__.load({
         colWrong: 'Typical failure',
         colFix: 'Write it like this',
         priceOf: (m) => (String(m).indexOf('mini') >= 0 ? 0.5 : 1.5),
+        copyAll: 'Copy all prompts',
+        syncCard: 'Cloud sync (optional)',
+        syncHint: 'Works with any endpoint speaking the dsh-video sync protocol (a reference server ships in server/). Local-first: nothing leaves this browser until you push.',
+        syncEndpoint: 'Sync endpoint (https)',
+        syncToken: 'Access token',
+        syncRemember: 'Remember token on this device',
+        syncRememberHint: 'Off (recommended): the token lives in memory only and is asked again next session.',
+        syncPush: 'Push',
+        syncPull: 'Pull & merge',
+        syncLast: (p, u) => `Last push ${p ? new Date(p).toLocaleString() : '—'} · last pull ${u ? new Date(u).toLocaleString() : '—'}`,
+        syncMerged: (n, c) => `${n} project(s) merged, ${c} conflict snapshot(s) kept`,
+        syncPushed: (n) => `${n} project(s) pushed`,
+        syncFail: 'Sync failed',
+        syncBadEndpoint: 'Endpoint must start with http(s)://',
+        syncNoProjects: 'Nothing to push yet',
       },
       zh: {
         title: 'AI 视频制片台',
@@ -226,6 +241,21 @@ window.__ModuleLoader__.load({
         colWrong: '模型容易犯的错',
         colFix: '应该怎么写',
         priceOf: (m) => (String(m).indexOf('mini') >= 0 ? 0.5 : 1.5),
+        copyAll: '复制全部提示词',
+        syncCard: '云同步（可选）',
+        syncHint: '兼容任何实现 dsh-video 同步协议的端点（server/ 目录自带参考服务）。本地优先：不点推送，数据不会离开浏览器。',
+        syncEndpoint: '同步端点（https）',
+        syncToken: '访问令牌',
+        syncRemember: '在本设备记住令牌',
+        syncRememberHint: '默认关闭（推荐）：令牌只在内存里，下次会话需重新输入。',
+        syncPush: '推送',
+        syncPull: '拉取并合并',
+        syncLast: (p, u) => `上次推送 ${p ? new Date(p).toLocaleString() : '—'} · 上次拉取 ${u ? new Date(u).toLocaleString() : '—'}`,
+        syncMerged: (n, c) => `已合并 ${n} 个项目，保留 ${c} 份冲突快照`,
+        syncPushed: (n) => `已推送 ${n} 个项目`,
+        syncFail: '同步失败',
+        syncBadEndpoint: '端点必须以 http(s):// 开头',
+        syncNoProjects: '还没有可推送的项目',
       },
     };
 
@@ -655,6 +685,59 @@ window.__ModuleLoader__.load({
       }
     }
 
+    // ------------------------------------------------------------------ sync (optional SaaS endpoint)
+    const SYNC_KEY = 'dsh-video.sync.v1';
+    function loadSyncSettings() {
+      try {
+        const raw = localStorage.getItem(SYNC_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) { /* ignore */ }
+      return { endpoint: '', rememberToken: false, token: '', lastPush: 0, lastPull: 0 };
+    }
+    function saveSyncSettings(s) {
+      try { localStorage.setItem(SYNC_KEY, JSON.stringify(s)); } catch (e) { /* ignore */ }
+    }
+    function normalizeEndpoint(url) {
+      const u = String(url || '').trim().replace(/\/+$/, '');
+      if (!u) return '';
+      if (!/^https?:\/\//i.test(u)) return '';
+      return u;
+    }
+    // Merge by project id; later updatedAt wins. The losing side is preserved under .conflicts.
+    function mergeProjects(local, remote) {
+      const map = new Map();
+      const stamp = (p) => p.updatedAt || 0;
+      local.concat(remote).forEach((p) => {
+        const cur = map.get(p.id);
+        if (!cur) { map.set(p.id, p); return; }
+        if (stamp(p) > stamp(cur)) {
+          map.set(p.id, { ...p, conflicts: (p.conflicts || []).concat({ from: stamp(cur), data: cur }) });
+        } else if (stamp(p) < stamp(cur)) {
+          map.set(p.id, { ...cur, conflicts: (cur.conflicts || []).concat({ from: stamp(p), data: p }) });
+        } else {
+          map.set(p.id, p);
+        }
+      });
+      return Array.from(map.values());
+    }
+    async function syncPush(settings, projects) {
+      const res = await fetch(normalizeEndpoint(settings.endpoint) + '/projects', {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json', authorization: 'Bearer ' + settings.token },
+        body: JSON.stringify({ projects, updatedAt: Date.now() }),
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + (await res.text().catch(() => '')));
+      return res.json().catch(() => ({}));
+    }
+    async function syncPull(settings) {
+      const res = await fetch(normalizeEndpoint(settings.endpoint) + '/projects', {
+        headers: { authorization: 'Bearer ' + settings.token },
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + (await res.text().catch(() => '')));
+      const data = await res.json();
+      return Array.isArray(data.projects) ? data.projects : [];
+    }
+
     // seven-section video prompt (article section 5)
     function buildSeven(project, s, lang) {
       const zh = lang === 'zh';
@@ -672,7 +755,7 @@ window.__ModuleLoader__.load({
       L.push(zh ? `【人物】${chars}` : `[CHARACTERS] ${chars}`);
       L.push(zh ? '【逐秒】' : '[SECOND BY SECOND]');
       L.push(zh ? '0–0.2 秒：画面完全静止，和首帧一模一样。' : '0–0.2s: the frame is completely still, identical to the first frame.');
-      if (s.action) L.push((zh ? '' : '') + s.action);
+      if (s.action) L.push(s.action);
       if (s.scene && s.scene !== s.action) L.push(s.scene);
       L.push(beats);
       L.push(zh ? '最后 0.3 秒：所有人完全停住，画面与尾帧完全一致。' : 'Last 0.3s: everyone is fully still, identical to the last frame.');
@@ -728,7 +811,8 @@ window.__ModuleLoader__.load({
         }
         L.push('');
       });
-      L.push(`> ${t.costSummary(sumYen >= 0 ? project.shots.flatMap((s) => s.ledger || []).reduce((a, e) => a + (Number(e.seconds) || 0), 0) : 0, sumOk, sumAll, sumYen)}`);
+      const allSeconds = project.shots.flatMap((s) => s.ledger || []).reduce((a, e) => a + (Number(e.seconds) || 0), 0);
+      L.push(`> ${t.costSummary(allSeconds, sumOk, sumAll, sumYen)}`);
       return L.join('\n');
     }
 
@@ -896,8 +980,58 @@ window.__ModuleLoader__.load({
       }, [toast]);
 
       const setLang = (v) => { setLangState(v); try { localStorage.setItem(LANG_KEY, v); } catch (e) { /* ignore */ } };
-      const mutate = (fn) => setProjects((prev) => { const next = fn(prev); saveProjects(next); return next; });
+      const mutate = (fn) => setProjects((prev) => {
+        const now = Date.now();
+        const next = fn(prev).map((p) => ({ ...p, updatedAt: now }));
+        saveProjects(next);
+        return next;
+      });
       const flash = () => setToast(t.copied);
+
+      // ---- cloud sync state
+      const [syncCfg, setSyncCfg] = React.useState(loadSyncSettings);
+      const [syncBusy, setSyncBusy] = React.useState(false);
+      const [syncMsg, setSyncMsg] = React.useState(null);
+      const patchSync = (patch) => setSyncCfg((prev) => {
+        const next = { ...prev, ...patch };
+        saveSyncSettings({ ...next, token: next.rememberToken ? next.token : '' });
+        return next;
+      });
+      React.useEffect(() => {
+        if (!syncMsg) return undefined;
+        const id = setTimeout(() => setSyncMsg(null), 4000);
+        return () => clearTimeout(id);
+      }, [syncMsg]);
+      const doPush = async () => {
+        const ep = normalizeEndpoint(syncCfg.endpoint);
+        if (!ep) { setSyncMsg(t.syncBadEndpoint); return; }
+        if (!projects.length) { setSyncMsg(t.syncNoProjects); return; }
+        setSyncBusy(true);
+        try {
+          await syncPush({ ...syncCfg, endpoint: ep }, projects);
+          patchSync({ lastPush: Date.now(), endpoint: ep });
+          setSyncMsg(t.syncPushed(projects.length));
+        } catch (e) { setSyncMsg(t.syncFail + ': ' + (e && e.message ? e.message : e)); }
+        finally { setSyncBusy(false); }
+      };
+      const doPull = async () => {
+        const ep = normalizeEndpoint(syncCfg.endpoint);
+        if (!ep) { setSyncMsg(t.syncBadEndpoint); return; }
+        setSyncBusy(true);
+        try {
+          const remote = await syncPull({ ...syncCfg, endpoint: ep });
+          let conflicts = 0;
+          setProjects((prev) => {
+            const merged = mergeProjects(prev, remote);
+            conflicts = merged.reduce((a, p) => a + ((p.conflicts || []).length), 0);
+            saveProjects(merged);
+            return merged;
+          });
+          patchSync({ lastPull: Date.now(), endpoint: ep });
+          setSyncMsg(t.syncMerged(remote.length, conflicts));
+        } catch (e) { setSyncMsg(t.syncFail + ': ' + (e && e.message ? e.message : e)); }
+        finally { setSyncBusy(false); }
+      };
 
       const newProject = () => mutate((prev) => {
         const p = freshProject(`${t.project} ${prev.length + 1}`);
@@ -988,6 +1122,35 @@ window.__ModuleLoader__.load({
             h('div', { className: 'dsv-grid2' },
               h(Field, { label: t.painterModel, value: project.painterModel, onChange: (v) => patchProject({ painterModel: v }) }),
               h(Field, { label: t.videoModel, hint: t.priceHint, value: project.videoModel, onChange: (v) => patchProject({ videoModel: v }) }))),
+
+          h('div', { className: 'dsv-card', style: { marginBottom: '14px' } },
+            h('strong', null, t.syncCard),
+            h('span', { className: 'dsv-subhint' }, t.syncHint),
+            h('div', { className: 'dsv-grid2' },
+              h('div', { className: 'dsv-field' },
+                h('span', { className: 'dsv-label' }, t.syncEndpoint),
+                h('input', {
+                  className: 'dsv-input', value: syncCfg.endpoint || '',
+                  placeholder: 'https://sync.example.com',
+                  onChange: (e) => patchSync({ endpoint: e.target.value }),
+                })),
+              h('div', { className: 'dsv-field' },
+                h('span', { className: 'dsv-label' }, t.syncToken),
+                h('input', {
+                  className: 'dsv-input', type: 'password', value: syncCfg.token || '',
+                  onChange: (e) => patchSync({ token: e.target.value }),
+                }))),
+            h('label', { className: 'dsv-check' },
+              h('input', {
+                type: 'checkbox', checked: !!syncCfg.rememberToken,
+                onChange: (e) => patchSync({ rememberToken: e.target.checked }),
+              }),
+              h('span', null, t.syncRemember, ' — ', t.syncRememberHint)),
+            h('div', { className: 'dsv-row' },
+              h('button', { className: 'dsv-btn dsv-btn-primary', disabled: syncBusy, onClick: doPush }, t.syncPush),
+              h('button', { className: 'dsv-btn', disabled: syncBusy, onClick: doPull }, t.syncPull),
+              (syncCfg.lastPush || syncCfg.lastPull) ? h('span', { className: 'dsv-subhint' }, t.syncLast(syncCfg.lastPush, syncCfg.lastPull)) : null),
+            syncMsg && h('span', { className: 'dsv-subhint', role: 'status' }, syncMsg)),
 
           project && h('div', { className: 'dsv-card', style: { marginBottom: '14px' } },
             h('strong', null, t.storyCard),
