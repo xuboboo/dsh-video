@@ -1,6 +1,6 @@
 {
   "name": "dsh-video",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "AI video production studio for DeepSeek Harness: storyboard, prompts, and shot pipeline (AI 视频制片工作台)",
   "private": true,
   "type": "module",

@@ -36,21 +36,26 @@ AI video is expensive: regenerating a shot costs money by the second, while rewr
 
 ## Features
 
-- **Sidebar entry** — the Video Studio registers as a global panel in the Harness left sidebar (next to Plugins and Scheduled tasks).
-- **Projects** — each short film is a project with aspect ratio, target length, and a budget note.
-- **Storyboard shots** — per shot: scene description, camera/motion, painter prompt (first/last frames), and video prompt (Seedance), all editable inline.
-- **Shot status pipeline** — cycle each shot through `Draft → Frames ready → Video generated → Final cut`, with a per-project done counter.
-- **Copy prompts** — copy one shot prompt, all prompts, or export the whole storyboard as Markdown to hand to your agent.
-- **Director brief** — one click copies a battle-tested "you are the director" briefing prompt that sets up the director/painter/animator division of labor and the cost-saving rules.
+- **Sidebar entry** — the Video Studio registers as a global panel in the Harness left sidebar (next to Plugins and Scheduled tasks), with three tabs: **Studio**, **Prompt library**, and **Failure modes**.
+- **Director brief** — the full multi-model kickoff prompt: roles (you / director / painter / animator), the Codex CLI invocation, the Seedance API endpoint, model ids with 720p prices (`doubao-seedance-2-5-260628` ≈ ¥1.5/s, `doubao-seedance-2-0-mini-260615` ≈ ¥0.5/s), and the seven working rules (audit agents, new files per version, never top up credits).
+- **Pre-flight check** — painter tool / ffmpeg / Python / `ARK_API_KEY` toggles per project, with a copyable report; nothing gets generated before the environment is ready.
+- **Story & style card** — one-line message, hook, story structure (episodic vs continuous), art style, character sheet, palette table, music. The rules from the article are printed right under each field.
+- **Storyboard shots** — per shot: what happens, main action, what is moving, link to next shot, shot size/camera/move, composition (38%/62% rule), estimated seconds, per-second beats, frame notes for the painter, sound.
+- **Seven-section prompt builder** — one click assembles the article's `[画风][镜头][构图与配色][人物][逐秒][声音][约束]` prompt from the fields above, in both languages.
+- **Frame checklist** — the article's 8 first/last-frame checks (props exist, bystanders staged, no shared poses, headroom, wind consistency, phone-size readability, stray objects, overlay drift) as per-shot checkboxes.
+- **Cost ledger** — every submitted generation (model, seconds, kept/failed, file/failure reason), auto-priced from the model id, with project totals against the budget cap.
+- **Review decision** — cut vs code-fix vs regenerate, with the article's ordering rule printed in the field.
+- **Prompt library** — ten copy-ready pipeline prompts in Chinese and English: director brief, story development, story audit agent, storyboard rules, first/last-frame audit, pre-submission audit, post-production, final film review, and the four-thread team mode (maker / auditor / supervisor / deputy).
+- **Failure modes tab** — the article's 20-row table of typical video-model failures and the phrasing that fixes them, for checking prompts against.
 - **Bilingual** — full Chinese and English UI with a one-click toggle; the default follows your browser language.
-- **Local-first** — everything is stored in your browser (`localStorage`); no accounts, no server, no telemetry.
+- **Local-first** — everything is stored in your browser (`localStorage`); no accounts, no server, no telemetry. v1 projects migrate automatically.
 - **Theme-aware** — styled exclusively with Harness theme tokens, so it matches light and dark mode automatically.
 
 ## Screenshots
 
-| Empty state (中文) | Storyboard in use (中文) | English UI |
+| Failure modes (中文) | Shot pipeline (中文) | English UI |
 | --- | --- | --- |
-| ![empty](screenshots/studio-zh-empty.png) | ![zh](screenshots/studio-zh.png) | ![en](screenshots/studio-en.png) |
+| ![failure modes](screenshots/failure-modes-zh.png) | ![shots](screenshots/shots-zh.png) | ![en](screenshots/studio-en.png) |
 
 ## Requirements
 
