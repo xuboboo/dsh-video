@@ -5,6 +5,12 @@
 
 English version: [CHANGELOG.md](./CHANGELOG.md)
 
+## [2.0.1] - 2026-11-08
+
+### 修复
+
+- 总导演提示词与四线程模式改为 DeepSeek Harness 原生语境：导演即本会话智能体，用子智能体（subagent）开分身做审核/监督/代理；Codex CLI 只是可选画师后端，缺失时可回退到会话内可用的生图能力。
+
 ## [2.0.0] - 2026-11-08
 
 ### 新增

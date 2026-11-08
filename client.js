@@ -236,19 +236,19 @@ window.__ModuleLoader__.load({
       {
         id: 'director',
         zh: {
-          title: '总导演提示词（开工发给 Claude / Codex）',
+          title: '总导演提示词（开工发给本会话的导演智能体）',
           body: [
-            '你当这支短片的总导演，全程负责，我只和你沟通。',
+            '你当这支短片的总导演，全程负责，我只和你沟通。你在 DeepSeek Harness 里工作，需要审核或分工时，用子智能体（subagent）开分身，不要让我切换工具。',
             '开工前先做两件事：',
             '1. 问我：片长、画幅、总预算、要不要配乐和字幕。',
-            '2. 检查 Codex、ffmpeg、Python 和 ARK_API_KEY 能不能用，缺什么告诉我。',
-            '记住所有文件都放在一个新的项目文件夹里。',
+            '2. 检查画师生图工具（已安装的 Codex CLI，或本会话可用的生图能力）、ffmpeg、Python 和 ARK_API_KEY 能不能用，缺什么告诉我，缺的环节先不花钱。',
+            '记住所有文件都放在一个新的项目文件夹里，命名规则：镜头号_版本_用途。',
             '分工：',
-            '- 你：写故事和分镜，写所有提示词，调用其他模型，抽帧放大检查每张图和每段视频，用 ffmpeg 和 Python 写代码做后期。',
-            '- Codex（画师）：画设定图、样帧和每个镜头的首尾帧。你不自己画。如果你就是 Codex，就用你自己的生图工具。',
-            '- Seedance（动画师）：把首尾帧变成几秒钟的视频。',
+            '- 你（导演）：写故事和分镜，写所有提示词，调用其他模型，抽帧放大检查每张图和每段视频，用 ffmpeg 和 Python 写代码做后期，记录每一笔费用。',
+            '- 画师：画设定图、样帧和每个镜头的首尾帧。优先用已安装的 Codex CLI；没有就用我会话里可用的生图工具，都不行就停下来告诉我。',
+            '- 动画师（Seedance）：把首尾帧变成几秒钟的视频，按秒计费。',
             '- 我：选方向、确认画风、批准花钱、看动态、听声音。',
-            '调用 Codex：',
+            '调用画师（已安装 Codex CLI 时）：',
             'codex exec --skip-git-repo-check -s read-only -i 参考图.png - < 提示词.txt',
             '提示词开头写：Use your image generation tool to create exactly ONE image. Do not run shell commands.',
             '画好的图在 ~/.codex/generated_images/<日志里的 session id>/。',
@@ -260,7 +260,7 @@ window.__ModuleLoader__.load({
             '规矩：',
             '1. 我确认故事前，不画任何图。',
             '2. 我确认画风前，不画正式镜头。',
-            '3. 提交视频生成前，另开一个 agent 审核提示词和图片的每个细节，它只挑错，不改文件。通过后报价，我同意才提交。',
+            '3. 提交视频生成前，另开一个子智能体审核提示词和图片的每个细节，它只挑错，不改文件。通过后报价，我同意才提交。',
             '4. 视频有问题，先想能不能用代码修，修不了才重拍，只拍这一镜。',
             '5. 新版本存新文件，不覆盖、不删除旧文件。',
             '6. 你看不到真正的动态，也听不到声音。没看过、没听过的东西，要明确告诉我。',
@@ -268,19 +268,19 @@ window.__ModuleLoader__.load({
           ].join('\n'),
         },
         en: {
-          title: 'Director brief (send first to Claude / Codex)',
+          title: 'Director brief (send to this session\'s director agent)',
           body: [
-            'You are the director of this short film, end to end. I only talk to you.',
+            'You are the director of this short film, end to end, and I only talk to you. You work inside DeepSeek Harness: for audits and delegation, spawn sub-agents instead of making me switch tools.',
             'Before starting:',
             '1. Ask me: target length, aspect ratio, total budget, music and subtitles yes/no.',
-            '2. Check that Codex, ffmpeg, Python, and ARK_API_KEY are available. Tell me what is missing.',
-            'Keep all files in one new project folder.',
+            '2. Check that a painter image tool (an installed Codex CLI, or image generation available to this session), ffmpeg, Python, and ARK_API_KEY are available. Tell me what is missing; do not spend on a missing link.',
+            'Keep all files in one new project folder. Naming: shotNo_version_purpose.',
             'Roles:',
-            '- You: story and storyboard, all prompts, drive the other models, extract and zoom frames to inspect every image and clip, post-production with ffmpeg/Python.',
-            '- Painter (Codex): character sheet, look-dev frames, first/last frames per shot. Do not draw yourself. If you ARE Codex, use your own image tool.',
-            '- Animator (Seedance): turn first/last frames into seconds of video.',
+            '- You (director): story and storyboard, all prompts, drive the other models, extract and zoom frames to inspect every image and clip, post-production with ffmpeg/Python, keep the cost ledger.',
+            '- Painter: character sheet, look-dev frames, first/last frames per shot. Prefer an installed Codex CLI; otherwise use the image generation available in this session; if neither exists, stop and tell me.',
+            '- Animator (Seedance): turn first/last frames into seconds of video, paid per second.',
             '- Me: direction, style approval, spending approval, watch motion, listen to sound.',
-            'Calling Codex:',
+            'Calling the painter (with Codex CLI installed):',
             'codex exec --skip-git-repo-check -s read-only -i reference.png - < prompt.txt',
             'Start the prompt with: Use your image generation tool to create exactly ONE image. Do not run shell commands.',
             'Images land in ~/.codex/generated_images/<session id from the log>/.',
@@ -292,7 +292,7 @@ window.__ModuleLoader__.load({
             'Rules:',
             '1. No images until I approve the story.',
             '2. No final shots until I approve the style.',
-            '3. Before any video submission, a separate agent audits every detail of prompt and images; it only finds faults. Quote a price; I approve, then submit.',
+            '3. Before any video submission, spawn a sub-agent to audit every detail of prompt and images; it only finds faults. Quote a price; I approve, then submit.',
             '4. If a clip is wrong, try code first; only then reshoot that one shot.',
             '5. New versions go to new files; never overwrite or delete old ones.',
             '6. You cannot see real motion or hear sound. Say so explicitly for anything unseen or unheard.',
@@ -339,7 +339,7 @@ window.__ModuleLoader__.load({
       {
         id: 'storyReview',
         zh: {
-          title: '2 · 剧情审核 agent（新开 agent，只给故事）',
+          title: '2 · 剧情审核（新开子智能体，只给故事）',
           body: [
             '这是一支短片的逐镜头故事。你是第一次看，只负责挑错，不改文件。',
             '1. 只按镜头顺序读，先写出你看懂的故事。',
@@ -444,7 +444,7 @@ window.__ModuleLoader__.load({
       {
         id: 'preSubmit',
         zh: {
-          title: '6 · 提交前审核（新开 agent，只读不改）',
+          title: '6 · 提交前审核（新开子智能体，只读不改）',
           body: [
             '你是审核，只读不改。这个镜头马上要提交视频生成，花的是真钱。',
             '材料：[提示词文件]、[首帧]、[尾帧]、[设定图]、[分镜表]、[配色规则]。',
@@ -502,7 +502,7 @@ window.__ModuleLoader__.load({
       {
         id: 'finalReview',
         zh: {
-          title: '9 · 全片复核（新开 agent，只给成片）',
+          title: '9 · 全片复核（新开子智能体，只给成片）',
           body: [
             '这是成片：[文件]。你第一次看，我不告诉你任何结论。',
             '1. 全部解码，每镜取多张全分辨率帧，切点前后各取 3 帧。',
@@ -529,14 +529,14 @@ window.__ModuleLoader__.load({
         zh: {
           title: '10 · 四线程模式（主做 / 审核 / 监督 / 代理）',
           body: [
-            '这支片子用四线程来做。你当主做，再开三个子 agent，四个一起配合，一直做到片子做完，或者账户欠费为止。',
-            '我说过的话在：[对话记录或者要求文件的路径；Claude Code 的记录在 ~/.claude/projects/ 下]。',
+            '这支片子用四线程来做。你当主做，再用子智能体开三个分身，四个一起配合，一直做到片子做完，或者账户欠费为止。',
+            '我说过的话在：[本会话的对话记录，或把我的要求整理成一个文件后给我路径]。',
             '总预算：¥[金额]。',
             '分工：',
             '- 主做：就是你，负责所有制作。',
-            '- 审核：开一个子 agent，只挑错，不改文件。每一步都要查，提交生成视频之前必须明确写“通过”。',
-            '- 监督：开一个子 agent，读完我说过的所有话，整理成要求清单。每一步都查有没有人忘了要求，包括你。',
-            '- 代理：开一个子 agent，读完我说过的所有话，整理成我的偏好。你和审核拿不准，或者要提交生成视频时，由它按我的偏好来决定，并写明依据和把握。它只能在总预算内批准提交，超过预算就停下来等我。',
+            '- 审核：开一个子智能体，只挑错，不改文件。每一步都要查，提交生成视频之前必须明确写“通过”。',
+            '- 监督：开一个子智能体，读完我说过的所有话，整理成要求清单。每一步都查有没有人忘了要求，包括你。',
+            '- 代理：开一个子智能体，读完我说过的所有话，整理成我的偏好。你和审核拿不准，或者要提交生成视频时，由它按我的偏好来决定，并写明依据和把握。它只能在总预算内批准提交，超过预算就停下来等我。',
             '配合的顺序：',
             '1. 你每做完一步，先交给审核，再交给监督。',
             '2. 有分歧就交给代理决定。',
@@ -548,7 +548,7 @@ window.__ModuleLoader__.load({
           title: '10 · Four threads (maker / auditor / supervisor / deputy)',
           body: [
             'Run this film on four threads. You are the maker; spawn three sub-agents; keep going until the film is done or the account runs dry.',
-            'Everything I have said is in: [path to chat log or requirements file; Claude Code logs live under ~/.claude/projects/].',
+            'Everything I have said is in: [this session\'s conversation, or a requirements file you ask me for].',
             'Total budget: ¥[amount].',
             'Roles:',
             '- Maker: you, own all production.',

@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.1] - 2026-11-08
+
+### Fixed
+
+- Rewrote the director brief and four-thread prompts for DeepSeek Harness: the director is this session's agent using sub-agents (not Claude Code / Codex CLI); Codex CLI is an optional painter backend, with a fallback to any image tool available in the session.
+
 ## [2.0.0] - 2026-11-08
 
 ### Added
