@@ -6,7 +6,7 @@
 
 **Plan AI short films the way multi-model teams actually work — storyboard, prompts, and shot pipeline, one sidebar panel away from your agent sessions.**
 
-[README](README.md) · [工作流](docs/WORKFLOW.md) · [截图](screenshots/) · [Changelog](CHANGELOG.md)
+[README](README.md) · [Workflow](docs/WORKFLOW.md) ([中文](docs/WORKFLOW.zh-CN.md)) · [Screenshots](screenshots/) · [Changelog](CHANGELOG.md) ([中文](CHANGELOG.zh-CN.md))
 
 `release` **v1.0.0** · `license` **MIT** · `topic` **[dsh-plugin](https://github.com/topics/dsh-plugin)** · `install` **1 command**
 
@@ -97,7 +97,7 @@ dsh-video/
 │   └── zh.json         # Plugin title/description (Chinese)
 ├── icon.svg            # Original panel icon
 ├── screenshots/        # Real-app screenshots (light theme, Windows)
-└── docs/               # Workflow notes
+└── docs/               # Workflow notes (English + 中文)
 ```
 
 **How it plugs in.** The bundle patch inserts one Loader entry named after the package. On the Client, the module registers two slot factories: an icon into `sidebar.panellist` (the left sidebar's global panel list) and the full panel into the keyed `main` slot under the same id, so selecting the sidebar entry swaps the central pane to the Studio. All styling uses `--dsw-alias-*` theme tokens only.

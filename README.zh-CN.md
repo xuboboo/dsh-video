@@ -6,7 +6,7 @@
 
 **像多模型团队真实协作那样规划 AI 短片——分镜、提示词、镜头流水线，离你的智能体会话只差一个侧栏面板。**
 
-[English](README.md) · [工作流](docs/WORKFLOW.md) · [截图](screenshots/) · [更新日志](CHANGELOG.md)
+[English](README.md) · [工作流](docs/WORKFLOW.zh-CN.md) ([English](docs/WORKFLOW.md)) · [截图](screenshots/) · [更新日志](CHANGELOG.zh-CN.md) ([English](CHANGELOG.md))
 
 `发布` **v1.0.0** · `协议` **MIT** · `主题` **[dsh-plugin](https://github.com/topics/dsh-plugin)** · `安装` **1 条命令**
 
