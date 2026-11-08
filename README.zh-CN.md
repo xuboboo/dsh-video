@@ -1,4 +1,20 @@
-# dsh-video · DeepSeek Harness 的 AI 视频制片台
+<div align="center">
+
+<img src="docs/hero.png" alt="dsh-video — DeepSeek Harness 的 AI 视频制片台" width="880" />
+
+# DeepSeek Harness 的 AI 视频制片台
+
+**像多模型团队真实协作那样规划 AI 短片——分镜、提示词、镜头流水线，离你的智能体会话只差一个侧栏面板。**
+
+[English](README.md) · [工作流](docs/WORKFLOW.md) · [截图](screenshots/) · [更新日志](CHANGELOG.md)
+
+`发布` **v1.0.0** · `协议` **MIT** · `主题` **[dsh-plugin](https://github.com/topics/dsh-plugin)** · `安装` **1 条命令**
+
+[English](README.md) · 简体中文
+
+</div>
+
+---
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![dsh 插件](https://img.shields.io/badge/topic-dsh--plugin-4D6BFE?style=flat-square)](https://github.com/topics/dsh-plugin)

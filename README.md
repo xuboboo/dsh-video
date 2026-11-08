@@ -1,4 +1,20 @@
-# dsh-video · Video Studio for DeepSeek Harness
+<div align="center">
+
+<img src="docs/hero.png" alt="dsh-video — The AI Video Studio for DeepSeek Harness" width="880" />
+
+# The AI Video Studio for DeepSeek Harness
+
+**Plan AI short films the way multi-model teams actually work — storyboard, prompts, and shot pipeline, one sidebar panel away from your agent sessions.**
+
+[README](README.md) · [工作流](docs/WORKFLOW.md) · [截图](screenshots/) · [Changelog](CHANGELOG.md)
+
+`release` **v1.0.0** · `license` **MIT** · `topic` **[dsh-plugin](https://github.com/topics/dsh-plugin)** · `install` **1 command**
+
+English · [简体中文](README.zh-CN.md)
+
+</div>
+
+---
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![dsh plugin](https://img.shields.io/badge/topic-dsh--plugin-4D6BFE?style=flat-square)](https://github.com/topics/dsh-plugin)
